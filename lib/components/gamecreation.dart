@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scoreboard/components/scoreboard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PlayerNameInputList extends StatefulWidget {
@@ -9,9 +10,8 @@ class PlayerNameInputList extends StatefulWidget {
 }
 
 class _PlayerNameInputListState extends State<PlayerNameInputList> {
-  final List<String> _players = [];
+  List<String> _players = [];
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _scoreController = TextEditingController();
 
   void _addPlayer() {
     final name = _nameController.text.trim();
@@ -23,8 +23,19 @@ class _PlayerNameInputListState extends State<PlayerNameInputList> {
     }
   }
 
-  _removePlayer(String player) {
-    _players.remove(player);
+  _removePlayer(String name) {
+    setState(() {
+      _players.remove(name);
+    });
+  }
+
+  void _goToScoreSheet() {
+    Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder: (context) => ScoreSheetsTable(players: _players),
+      ),
+    );
   }
 
   @override
@@ -55,19 +66,20 @@ class _PlayerNameInputListState extends State<PlayerNameInputList> {
             Expanded(
               child: _players.isEmpty
                   ? const Center(child: Text('No players yet!'))
-                  : ListView(
-                      children: _players.map((player) {
+                  : ListView.builder(
+                      itemCount: _players.length,
+                      itemBuilder: (BuildContext context, int index) {
                         return ListTile(
                           title: Text(
-                            player,
+                            _players[index],
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           trailing: FilledButton(
-                            onPressed: _removePlayer(player),
+                            onPressed: () => _removePlayer(_players[index]),
                             child: const Text('Remove'),
                           ),
                         );
-                      }).toList(),
+                      },
                     ),
             ),
           ],
@@ -75,10 +87,4 @@ class _PlayerNameInputListState extends State<PlayerNameInputList> {
       ),
     );
   }
-}
-
-class Player {
-  final String name;
-  final List<int> turns;
-  Player({required this.name, required this.turns});
 }

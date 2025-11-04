@@ -8,14 +8,13 @@ void main() {
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
-  // final List list = ['x', 'Ricky', 'Nessi', 'Nico'];
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(title: const Text('Home')),
-        // body: ScoreSheetsTable(players: ['Ricky', 'Nessi']),
+        // body: ScoreSheetsTable(players: ['Test', 'Name']),
         body: PlayerNameInputList(),
       ),
     );
