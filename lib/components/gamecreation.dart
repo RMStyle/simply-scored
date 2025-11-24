@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scoreboard/components/scoreboard.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
 class PlayerNameInputList extends StatefulWidget {
   const PlayerNameInputList({Key? key}) : super(key: key);
@@ -84,6 +84,17 @@ class _PlayerNameInputListState extends State<PlayerNameInputList> {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute<void>(
+              builder: (context) => ScoreSheetsTable(players: _players),
+            ),
+          );
+        },
+        child: const Icon(Icons.play_arrow),
       ),
     );
   }
