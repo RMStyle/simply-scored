@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:scoreboard/components/scoreboard.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PlayerNameInputList extends StatefulWidget {
-  const PlayerNameInputList({Key? key}) : super(key: key);
+  const PlayerNameInputList({super.key});
 
   @override
   State<PlayerNameInputList> createState() => _PlayerNameInputListState();
@@ -13,35 +13,40 @@ class _PlayerNameInputListState extends State<PlayerNameInputList> {
   List<String> _players = [];
   final TextEditingController _nameController = TextEditingController();
 
-  void _addPlayer() {
+  @override
+  void initState() {
+    super.initState();
+    _loadPlayerList();
+  }
+
+  Future<void> _loadPlayerList() async {
+    final prefs = await SharedPreferences.getInstance();
+    _players = prefs.getStringList('players') ?? [];
+  }
+
+  void _addPlayer() async {
+    final prefs = await SharedPreferences.getInstance();
     final name = _nameController.text.trim();
     if (name.isNotEmpty && !_players.any((p) => p == name)) {
       setState(() {
         _players.add(name);
+        prefs.setStringList('players', _players);
       });
       _nameController.clear();
     }
   }
 
-  _removePlayer(String name) {
+  _removePlayer(String name) async {
+    final prefs = await SharedPreferences.getInstance();
     setState(() {
       _players.remove(name);
+      prefs.setStringList('players', _players);
     });
-  }
-
-  void _goToScoreSheet() {
-    Navigator.push(
-      context,
-      MaterialPageRoute<void>(
-        builder: (context) => ScoreSheetsTable(players: _players),
-      ),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Scoreboard Per Turn')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -54,6 +59,7 @@ class _PlayerNameInputListState extends State<PlayerNameInputList> {
                     decoration: const InputDecoration(
                       labelText: 'Add Player Name',
                     ),
+                    // onSubmitted: () => _addPlayer,
                   ),
                 ),
                 ElevatedButton(
