@@ -1,5 +1,5 @@
-name: scoreboard
-description: "A new Flutter project."
+name: simply_scored
+description: "Track your game scores easily."
 publish_to: 'none'
 version: 0.1.0
 
@@ -7,6 +7,7 @@ environment:
   sdk: ^3.9.2
 
 dependencies:
+  dynamic_color: ^1.8.1
   flutter:
     sdk: flutter
   shared_preferences: ^2.5.3
@@ -18,3 +19,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:

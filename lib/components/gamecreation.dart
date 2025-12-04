@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:scoreboard/components/scoreboard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:simply_scored/components/scoreboard.dart';
 
 class PlayerNameInputList extends StatefulWidget {
   const PlayerNameInputList({super.key});
