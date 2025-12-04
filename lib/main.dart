@@ -18,10 +18,7 @@ class MainApp extends StatelessWidget {
             padding: EdgeInsets.zero,
             children: <Widget>[
               const DrawerHeader(
-                child: Text(
-                  'Drawer Header',
-                  style: TextStyle(color: Colors.white, fontSize: 24),
-                ),
+                child: Text('Settings', style: TextStyle(fontSize: 24)),
               ),
               ListTile(
                 leading: const Icon(Icons.document_scanner),
