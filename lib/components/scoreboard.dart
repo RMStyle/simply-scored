@@ -1,14 +1,18 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ScoreSheetsTable extends StatefulWidget {
   final List<String> players;
   final int initialTurns;
 
   const ScoreSheetsTable({
-    Key? key,
+    super.key,
     required this.players,
     this.initialTurns = 1,
-  }) : super(key: key);
+  });
 
   @override
   State<ScoreSheetsTable> createState() => _ScoreSheetsTableState();
@@ -41,9 +45,24 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
   }
 
   void _removeTurn() {
-    // TODO fix
-    controllers.removeLast();
-    turns--;
+    if (turns <= 1 || controllers.isEmpty) return;
+    setState(() {
+      final removedRow = controllers.removeLast();
+      for (final c in removedRow) {
+        c.dispose();
+      }
+      turns--;
+    });
+  }
+
+  @override
+  void dispose() {
+    for (final row in controllers) {
+      for (final c in row) {
+        c.dispose();
+      }
+    }
+    super.dispose();
   }
 
   int getPlayerTotal(int playerIndex) {
@@ -53,6 +72,78 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
       total += val ?? 0;
     }
     return total;
+  }
+
+  Map<String, dynamic> _scoreboardToJson() {
+    return {
+      'players': players,
+      'turns': turns,
+      'scores': controllers
+          .map((row) => row.map((c) => c.text).toList())
+          .toList(),
+    };
+  }
+
+  Future<String> _localFilePath(String name) async {
+    final dir = await getApplicationDocumentsDirectory();
+    return '${dir.path}/$name';
+  }
+
+  Future<void> _saveToFile({String filename = 'scoreboard.json'}) async {
+    final path = await _localFilePath(filename);
+    final file = File(path);
+    await file.writeAsString(jsonEncode(_scoreboardToJson()));
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Saved to $path')));
+    }
+  }
+
+  Future<void> _loadFromFile({String filename = 'scoreboard.json'}) async {
+    final path = await _localFilePath(filename);
+    final file = File(path);
+    if (!await file.exists()) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No saved scoreboard found')),
+        );
+      }
+      return;
+    }
+    final raw = await file.readAsString();
+    final data = jsonDecode(raw) as Map<String, dynamic>;
+
+    final savedPlayers = List<String>.from(data['players'] ?? []);
+    final savedScores =
+        (data['scores'] as List<dynamic>?)
+            ?.map((r) => List<String>.from(r as List<dynamic>))
+            .toList() ??
+        [];
+    final savedTurns = data['turns'] is int
+        ? data['turns'] as int
+        : savedScores.length;
+
+    // dispose old controllers
+    for (final row in controllers) {
+      for (final c in row) {
+        c.dispose();
+      }
+    }
+
+    setState(() {
+      players = savedPlayers;
+      turns = savedTurns;
+      controllers = List.generate(
+        turns,
+        (r) => List.generate(players.length, (c) {
+          final txt = (r < savedScores.length && c < savedScores[r].length)
+              ? savedScores[r][c]
+              : '';
+          return TextEditingController(text: txt);
+        }),
+      );
+    });
   }
 
   @override
@@ -69,10 +160,18 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
                   onPressed: _addTurn,
                   child: const Text('Add Turn'),
                 ),
-                // ElevatedButton(
-                //   onPressed: _removeTurn,
-                //   child: const Text('Remove Turn'),
-                // ),
+                ElevatedButton(
+                  onPressed: (turns > 1) ? _removeTurn : null,
+                  child: const Text('Remove Turn'),
+                ),
+                ElevatedButton(
+                  onPressed: _saveToFile,
+                  child: const Text('Save'),
+                ),
+                ElevatedButton(
+                  onPressed: _loadFromFile,
+                  child: const Text('Load'),
+                ),
               ],
             ),
             const SizedBox(height: 16),
