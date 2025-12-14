@@ -156,21 +156,25 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
           children: [
             Row(
               children: [
-                ElevatedButton(
+                ElevatedButton.icon(
                   onPressed: _addTurn,
-                  child: const Text('Add Turn'),
+                  label: const Text('Add Turn'),
+                  icon: const Icon(Icons.add),
                 ),
-                ElevatedButton(
+                ElevatedButton.icon(
                   onPressed: (turns > 1) ? _removeTurn : null,
-                  child: const Text('Remove Turn'),
+                  label: const Text('Remove Turn'),
+                  icon: const Icon(Icons.remove),
                 ),
-                ElevatedButton(
+                ElevatedButton.icon(
                   onPressed: _saveToFile,
-                  child: const Text('Save'),
+                  label: const Text('Save'),
+                  icon: const Icon(Icons.save),
                 ),
-                ElevatedButton(
+                ElevatedButton.icon(
                   onPressed: _loadFromFile,
-                  child: const Text('Load'),
+                  label: const Text('Load'),
+                  icon: const Icon(Icons.folder_open),
                 ),
               ],
             ),
