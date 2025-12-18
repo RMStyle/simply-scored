@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:file_picker/file_picker.dart';
 
 class ScoreSheetsTable extends StatefulWidget {
   final List<String> players;
@@ -90,8 +91,23 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
   }
 
   Future<void> _saveToFile({String filename = 'scoreboard.json'}) async {
-    final path = await _localFilePath(filename);
-    final file = File(path);
+    String? path;
+    File file;
+
+    if (filename == 'scoreboard.json') {
+      // Let the user pick where to save the file.
+      final selected = await FilePicker.platform.saveFile(
+        dialogTitle: 'Save scoreboard',
+        fileName: filename,
+      );
+      if (selected == null) return; // user cancelled
+      path = selected;
+      file = File(path);
+    } else {
+      path = await _localFilePath(filename);
+      file = File(path);
+    }
+
     await file.writeAsString(jsonEncode(_scoreboardToJson()));
     if (mounted) {
       ScaffoldMessenger.of(
@@ -101,49 +117,78 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
   }
 
   Future<void> _loadFromFile({String filename = 'scoreboard.json'}) async {
-    final path = await _localFilePath(filename);
-    final file = File(path);
-    if (!await file.exists()) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No saved scoreboard found')),
+    try {
+      File? file;
+      if (filename != 'scoreboard.json') {
+        final dir = await getApplicationDocumentsDirectory();
+        file = File('${dir.path}/$filename');
+        if (!await file.exists()) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('File not found: $filename')),
+            );
+          }
+          return;
+        }
+      } else {
+        // Use native file picker to choose a JSON file.
+        final result = await FilePicker.platform.pickFiles(
+          type: FileType.custom,
+          allowedExtensions: ['json'],
         );
+        if (result == null || result.files.isEmpty) return;
+        final pickedPath = result.files.single.path;
+        if (pickedPath == null) return;
+        file = File(pickedPath);
       }
-      return;
-    }
-    final raw = await file.readAsString();
-    final data = jsonDecode(raw) as Map<String, dynamic>;
 
-    final savedPlayers = List<String>.from(data['players'] ?? []);
-    final savedScores =
-        (data['scores'] as List<dynamic>?)
-            ?.map((r) => List<String>.from(r as List<dynamic>))
-            .toList() ??
-        [];
-    final savedTurns = data['turns'] is int
-        ? data['turns'] as int
-        : savedScores.length;
+      final raw = await file.readAsString();
+      final data = jsonDecode(raw) as Map<String, dynamic>;
 
-    // dispose old controllers
-    for (final row in controllers) {
-      for (final c in row) {
-        c.dispose();
+      final savedPlayers = List<String>.from(data['players'] ?? []);
+      final savedScores =
+          (data['scores'] as List<dynamic>?)
+              ?.map((r) => List<String>.from(r as List<dynamic>))
+              .toList() ??
+          [];
+      final savedTurns = data['turns'] is int
+          ? data['turns'] as int
+          : savedScores.length;
+
+      // dispose old controllers
+      for (final row in controllers) {
+        for (final c in row) {
+          c.dispose();
+        }
+      }
+
+      if (!mounted) return;
+      setState(() {
+        players = savedPlayers;
+        turns = savedTurns;
+        controllers = List.generate(
+          turns,
+          (r) => List.generate(players.length, (c) {
+            final txt = (r < savedScores.length && c < savedScores[r].length)
+                ? savedScores[r][c]
+                : '';
+            return TextEditingController(text: txt);
+          }),
+        );
+      });
+      if (mounted) {
+        final loadedName = file.path.split(Platform.pathSeparator).last;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Loaded $loadedName')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to load file: $e')));
       }
     }
-
-    setState(() {
-      players = savedPlayers;
-      turns = savedTurns;
-      controllers = List.generate(
-        turns,
-        (r) => List.generate(players.length, (c) {
-          final txt = (r < savedScores.length && c < savedScores[r].length)
-              ? savedScores[r][c]
-              : '';
-          return TextEditingController(text: txt);
-        }),
-      );
-    });
   }
 
   @override
@@ -154,7 +199,9 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Row(
+            Wrap(
+              spacing: 8.0,
+              runSpacing: 8.0,
               children: [
                 ElevatedButton.icon(
                   onPressed: _addTurn,
