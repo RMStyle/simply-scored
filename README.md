@@ -1,3 +1,3 @@
 # Simply Scored
 
-A new Flutter project.
+Track your game scores easily.
