@@ -85,11 +85,6 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
     };
   }
 
-  Future<String> _localFilePath(String name) async {
-    final dir = await getApplicationDocumentsDirectory();
-    return '${dir.path}/$name';
-  }
-
   Future<void> _saveToFile() async {
     // Let the user pick where to save the file.
     final selected = await FilePicker.platform.saveFile(

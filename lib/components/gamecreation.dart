@@ -36,12 +36,27 @@ class _PlayerNameInputListState extends State<PlayerNameInputList> {
     }
   }
 
-  _removePlayer(String name) async {
+  Future<void> _removePlayer(String name) async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _players.remove(name);
       prefs.setStringList('players', _players);
     });
+  }
+
+  void _onPressed() {
+    if (_players.isNotEmpty) {
+      Navigator.push(
+        context,
+        MaterialPageRoute<void>(
+          builder: (context) => ScoreSheetsTable(players: _players),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please add at least one player.')),
+      );
+    }
   }
 
   @override
@@ -92,14 +107,7 @@ class _PlayerNameInputListState extends State<PlayerNameInputList> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute<void>(
-              builder: (context) => ScoreSheetsTable(players: _players),
-            ),
-          );
-        },
+        onPressed: _onPressed,
         child: const Icon(Icons.play_arrow),
       ),
     );
