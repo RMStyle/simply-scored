@@ -90,29 +90,19 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
     return '${dir.path}/$name';
   }
 
-  Future<void> _saveToFile({String filename = 'scoreboard.json'}) async {
-    String? path;
-    File file;
+  Future<void> _saveToFile() async {
+    // Let the user pick where to save the file.
+    final selected = await FilePicker.platform.saveFile(
+      dialogTitle: 'Save scoreboard',
+      fileName: 'scoreboard.json',
+      bytes: utf8.encode(jsonEncode(_scoreboardToJson())),
+    );
+    if (selected == null) return; // user cancelled
 
-    if (filename == 'scoreboard.json') {
-      // Let the user pick where to save the file.
-      final selected = await FilePicker.platform.saveFile(
-        dialogTitle: 'Save scoreboard',
-        fileName: filename,
-      );
-      if (selected == null) return; // user cancelled
-      path = selected;
-      file = File(path);
-    } else {
-      path = await _localFilePath(filename);
-      file = File(path);
-    }
-
-    await file.writeAsString(jsonEncode(_scoreboardToJson()));
     if (mounted) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Saved to $path')));
+      ).showSnackBar(SnackBar(content: Text('Saved succesfully')));
     }
   }
 
