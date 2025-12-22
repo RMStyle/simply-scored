@@ -17,11 +17,7 @@ class MainApp extends StatelessWidget {
         ColorScheme darkColorScheme;
 
         if (lightDynamic != null && darkDynamic != null) {
-          // On Android S+ devices, use the provided dynamic color scheme.
-          // (Recommended) Harmonize the dynamic color scheme' built-in semantic colors.
           lightColorScheme = lightDynamic.harmonized();
-
-          // Repeat for the dark color scheme.
           darkColorScheme = darkDynamic.harmonized();
         } else {
           // Otherwise, use fallback schemes.
@@ -49,6 +45,9 @@ class MainApp extends StatelessWidget {
                     onTap: () => showAboutDialog(
                       context: context,
                       applicationName: 'Simply Scored',
+                      applicationIcon: FlutterLogo(),
+                      applicationVersion: 'test version 3',
+                      applicationLegalese: 'Track your game scores easily.',
                     ),
                   ),
                 ],

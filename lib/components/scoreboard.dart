@@ -101,31 +101,16 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
     }
   }
 
-  Future<void> _loadFromFile({String filename = 'scoreboard.json'}) async {
+  Future<void> _loadFromFile() async {
     try {
-      File? file;
-      if (filename != 'scoreboard.json') {
-        final dir = await getApplicationDocumentsDirectory();
-        file = File('${dir.path}/$filename');
-        if (!await file.exists()) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('File not found: $filename')),
-            );
-          }
-          return;
-        }
-      } else {
-        // Use native file picker to choose a JSON file.
-        final result = await FilePicker.platform.pickFiles(
-          type: FileType.custom,
-          allowedExtensions: ['json'],
-        );
-        if (result == null || result.files.isEmpty) return;
-        final pickedPath = result.files.single.path;
-        if (pickedPath == null) return;
-        file = File(pickedPath);
-      }
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+      );
+      if (result == null || result.files.isEmpty) return;
+      final pickedPath = result.files.single.path;
+      if (pickedPath == null) return;
+      final file = File(pickedPath);
 
       final raw = await file.readAsString();
       final data = jsonDecode(raw) as Map<String, dynamic>;
@@ -179,7 +164,22 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Score Sheets')),
+      appBar: AppBar(
+        title: const Text('Score Sheets'),
+        actions: [
+          IconButton(
+            onPressed: _saveToFile,
+            tooltip: 'Save',
+            icon: const Icon(Icons.save),
+          ),
+          IconButton(
+            onPressed: _loadFromFile,
+            tooltip: 'Load',
+            icon: const Icon(Icons.folder_open),
+          ),
+        ],
+        automaticallyImplyLeading: !Platform.isAndroid,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -197,16 +197,6 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
                   onPressed: (turns > 1) ? _removeTurn : null,
                   label: const Text('Remove Turn'),
                   icon: const Icon(Icons.remove),
-                ),
-                ElevatedButton.icon(
-                  onPressed: _saveToFile,
-                  label: const Text('Save'),
-                  icon: const Icon(Icons.save),
-                ),
-                ElevatedButton.icon(
-                  onPressed: _loadFromFile,
-                  label: const Text('Load'),
-                  icon: const Icon(Icons.folder_open),
                 ),
               ],
             ),
