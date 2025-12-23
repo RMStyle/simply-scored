@@ -32,6 +32,12 @@ jobs:
       - name: Build AppBundle (optional)
         run: flutter build appbundle --release
 
+      - name: Build Web
+        run: flutter build web --release
+
+      - name: Build Linux
+        run: flutter build linux --release
+
       - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
@@ -43,3 +49,15 @@ jobs:
         with:
           name: release-bundle
           path: build/app/outputs/bundle/release/app-release.aab
+
+      - name: Upload Web
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-bundle
+          path: build/web
+
+      - name: Upload Linux
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-bundle
+          path: build/linux/x64/release/bundle
