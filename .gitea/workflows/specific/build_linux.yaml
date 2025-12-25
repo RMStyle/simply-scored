@@ -11,6 +11,9 @@ jobs:
         
       - name: Setup cmake
         uses: lukka/get-cmake@latest
+        with:
+          useLocalCache: true         # <--= Use the local cache (default is 'false').
+          useCloudCache: false        # <--= Ditch the cloud cache (default is 'true').
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
