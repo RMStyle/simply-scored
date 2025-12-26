@@ -1,7 +1,7 @@
 # Simply Scored
 
 Track your game scores easily.
-Created with flutter.
+Created with flutter. Currently the only tested versions are: Linux, Android, Web.
 
 ## AI Assistance Disclaimer
 

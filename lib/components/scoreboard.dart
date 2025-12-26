@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:file_picker/file_picker.dart';
 
 class ScoreSheetsTable extends StatefulWidget {
@@ -161,107 +160,140 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
     }
   }
 
+  Future<void> _callUnsavedChangesDialog(bool didPop) async {
+    if (!didPop) {
+      final shouldLeave = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Unsaved Changes"),
+          content: const Text("You have unsaved changes. Leave anyway?"),
+          actions: [
+            TextButton(
+              child: const Text("Stay"),
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
+            TextButton(
+              child: const Text("Leave"),
+              onPressed: () => Navigator.of(context).pop(true),
+            ),
+          ],
+        ),
+      );
+      if (shouldLeave == true && mounted) {
+        Navigator.of(context).pop();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Score Sheets'),
-        actions: [
-          IconButton(
-            onPressed: _saveToFile,
-            tooltip: 'Save',
-            icon: const Icon(Icons.save),
-          ),
-          IconButton(
-            onPressed: _loadFromFile,
-            tooltip: 'Load',
-            icon: const Icon(Icons.folder_open),
-          ),
-        ],
-        automaticallyImplyLeading: !Platform.isAndroid,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Wrap(
-              spacing: 8.0,
-              runSpacing: 8.0,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: _addTurn,
-                  label: const Text('Add Turn'),
-                  icon: const Icon(Icons.add),
-                ),
-                ElevatedButton.icon(
-                  onPressed: (turns > 1) ? _removeTurn : null,
-                  label: const Text('Remove Turn'),
-                  icon: const Icon(Icons.remove),
-                ),
-              ],
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        await _callUnsavedChangesDialog(didPop);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Score Sheets'),
+          actions: [
+            IconButton(
+              onPressed: _saveToFile,
+              tooltip: 'Save',
+              icon: const Icon(Icons.save),
             ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  columns: [
-                    const DataColumn(label: Text('Turn')),
-                    ...players.map((name) => DataColumn(label: Text(name))),
-                  ],
-                  rows: List.generate(turns + (showTotals ? 1 : 0), (rowIndex) {
-                    if (showTotals && rowIndex == turns) {
+            IconButton(
+              onPressed: _loadFromFile,
+              tooltip: 'Load',
+              icon: const Icon(Icons.folder_open),
+            ),
+          ],
+          automaticallyImplyLeading: !Platform.isAndroid,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: _addTurn,
+                    label: const Text('Add Turn'),
+                    icon: const Icon(Icons.add),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: (turns > 1) ? _removeTurn : null,
+                    label: const Text('Remove Turn'),
+                    icon: const Icon(Icons.remove),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: DataTable(
+                    columns: [
+                      const DataColumn(label: Text('Turn')),
+                      ...players.map((name) => DataColumn(label: Text(name))),
+                    ],
+                    rows: List.generate(turns + (showTotals ? 1 : 0), (
+                      rowIndex,
+                    ) {
+                      if (showTotals && rowIndex == turns) {
+                        return DataRow(
+                          cells: [
+                            const DataCell(
+                              Text(
+                                'Total',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            ...List.generate(
+                              players.length,
+                              (col) => DataCell(
+                                Text(
+                                  getPlayerTotal(col).toString(),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                      // Data rows
                       return DataRow(
                         cells: [
-                          const DataCell(
-                            Text(
-                              'Total',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
+                          DataCell(Text('Turn ${rowIndex + 1}')),
                           ...List.generate(
                             players.length,
                             (col) => DataCell(
-                              Text(
-                                getPlayerTotal(col).toString(),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
+                              SizedBox(
+                                width: 60,
+                                child: TextField(
+                                  controller: controllers[rowIndex][col],
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    isDense: true,
+                                    hintText: '-',
+                                  ),
+                                  keyboardType: TextInputType.number,
+                                  onChanged: (_) => setState(() {}),
                                 ),
                               ),
                             ),
                           ),
                         ],
                       );
-                    }
-                    // Data rows
-                    return DataRow(
-                      cells: [
-                        DataCell(Text('Turn ${rowIndex + 1}')),
-                        ...List.generate(
-                          players.length,
-                          (col) => DataCell(
-                            SizedBox(
-                              width: 60,
-                              child: TextField(
-                                controller: controllers[rowIndex][col],
-                                decoration: const InputDecoration(
-                                  border: InputBorder.none,
-                                  isDense: true,
-                                  hintText: '-',
-                                ),
-                                keyboardType: TextInputType.number,
-                                onChanged: (_) => setState(() {}),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  }),
+                    }),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
