@@ -22,6 +22,7 @@ class ScoreSheetsTable extends StatefulWidget {
 class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
   late List<String> players;
   late List<List<TextEditingController>> controllers;
+  late List<List<FocusNode>> focusNodes;
   late int turns;
   bool showTotals = true;
 
@@ -34,6 +35,10 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
       turns,
       (_) => List.generate(players.length, (_) => TextEditingController()),
     );
+    focusNodes = List.generate(
+      turns,
+      (_) => List.generate(players.length, (_) => FocusNode()),
+    );
   }
 
   void _addTurn() {
@@ -42,6 +47,7 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
       controllers.add(
         List.generate(players.length, (_) => TextEditingController()),
       );
+      focusNodes.add(List.generate(players.length, (_) => FocusNode()));
     });
   }
 
@@ -52,6 +58,10 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
       for (final c in removedRow) {
         c.dispose();
       }
+      final removedFocusRow = focusNodes.removeLast();
+      for (final f in removedFocusRow) {
+        f.dispose();
+      }
       turns--;
     });
   }
@@ -61,6 +71,11 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
     for (final row in controllers) {
       for (final c in row) {
         c.dispose();
+      }
+    }
+    for (final row in focusNodes) {
+      for (final f in row) {
+        f.dispose();
       }
     }
     super.dispose();
@@ -131,6 +146,11 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
           c.dispose();
         }
       }
+      for (final row in focusNodes) {
+        for (final f in row) {
+          f.dispose();
+        }
+      }
 
       if (!mounted) return;
       setState(() {
@@ -145,7 +165,12 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
             return TextEditingController(text: txt);
           }),
         );
+        focusNodes = List.generate(
+          turns,
+          (_) => List.generate(players.length, (_) => FocusNode()),
+        );
       });
+
       if (mounted) {
         final loadedName = file.path.split(Platform.pathSeparator).last;
         ScaffoldMessenger.of(
@@ -183,6 +208,35 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
       if (shouldLeave == true && mounted) {
         Navigator.of(context).pop();
       }
+    }
+  }
+
+  void _focusNextField() {
+    for (int row = 0; row < turns; row++) {
+      for (int column = 0; column < players.length; column++) {
+        if (focusNodes[row][column].hasFocus) {
+          int nodeRow = row;
+          int nodeCol = column + 1;
+          if (nodeCol >= players.length) {
+            nodeCol = 0;
+            nodeRow = row + 1;
+          }
+          if (nodeRow >= turns) {
+            _addTurn();
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (focusNodes.isNotEmpty && focusNodes.last.isNotEmpty) {
+                focusNodes.last.first.requestFocus();
+              }
+            });
+          } else {
+            focusNodes[nodeRow][nodeCol].requestFocus();
+          }
+          return;
+        }
+      }
+    }
+    if (turns > 0 && players.isNotEmpty) {
+      focusNodes[0][0].requestFocus();
     }
   }
 
@@ -274,6 +328,7 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
                               SizedBox(
                                 width: 60,
                                 child: TextField(
+                                  focusNode: focusNodes[rowIndex][col],
                                   controller: controllers[rowIndex][col],
                                   decoration: const InputDecoration(
                                     border: InputBorder.none,
@@ -287,6 +342,7 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
                                     FilteringTextInputFormatter.digitsOnly,
                                   ],
                                   onChanged: (_) => setState(() {}),
+                                  onSubmitted: (_) => _focusNextField(),
                                 ),
                               ),
                             ),
