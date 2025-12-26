@@ -1,4 +1,4 @@
-package com.example.scoreboard
+package com.fpuellen.simplyscored
 
 import io.flutter.embedding.android.FlutterActivity
 
