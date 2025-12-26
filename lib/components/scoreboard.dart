@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/services.dart';
 
 class ScoreSheetsTable extends StatefulWidget {
   final List<String> players;
@@ -264,7 +265,6 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
                           ],
                         );
                       }
-                      // Data rows
                       return DataRow(
                         cells: [
                           DataCell(Text('Turn ${rowIndex + 1}')),
@@ -280,7 +280,12 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
                                     isDense: true,
                                     hintText: '-',
                                   ),
-                                  keyboardType: TextInputType.number,
+                                  keyboardType: TextInputType.numberWithOptions(
+                                    decimal: false,
+                                  ),
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
                                   onChanged: (_) => setState(() {}),
                                 ),
                               ),
