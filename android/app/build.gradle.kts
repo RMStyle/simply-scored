@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.scoreboard"
+    namespace = "com.fpuellen.simplyscored"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -18,8 +18,7 @@ android {
     // Kotlin compiler options migrated to the compilerOptions DSL below.
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.scoreboard"
+        applicationId = "com.fpuellen.simplyscored"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
