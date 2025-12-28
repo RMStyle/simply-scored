@@ -1,6 +1,15 @@
 # Simply Scored
 
 Track your game scores easily.
+
+Keep track of scores quickly and clearly with Simply Scored.
+
+Features:
+- Multiple players and turns support
+- Editable scores with instant totals
+- Save and load score sheets (JSON)
+- Lightweight, offline-first UI
+
 Created with flutter. Currently the only tested versions are: Linux, Android, Web.
 
 ## AI Assistance Disclaimer
