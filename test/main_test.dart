@@ -42,7 +42,7 @@ void main() {
       // await tester.pumpAndSettle();
 
       // expect(find.text('Simply Scored'), findsOneWidget);
-      // expect(find.text('0.1.0'), findsOneWidget);
+      // expect(find.text('0.1.1'), findsOneWidget);
     },
   );
 }

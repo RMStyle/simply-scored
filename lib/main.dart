@@ -46,7 +46,7 @@ class MainApp extends StatelessWidget {
                       context: context,
                       applicationName: 'Simply Scored',
                       applicationIcon: FlutterLogo(),
-                      applicationVersion: '0.1.0',
+                      applicationVersion: '0.1.1',
                       applicationLegalese: 'Track your game scores easily.',
                     ),
                   ),
