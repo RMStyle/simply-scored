@@ -39,16 +39,21 @@ class MainApp extends StatelessWidget {
                   const DrawerHeader(
                     child: Text('Settings', style: TextStyle(fontSize: 24)),
                   ),
-                  ListTile(
-                    leading: const Icon(Icons.document_scanner),
-                    title: const Text('Licenses'),
-                    onTap: () => showAboutDialog(
-                      context: context,
-                      applicationName: 'Simply Scored',
-                      applicationIcon: FlutterLogo(),
-                      applicationVersion: '0.1.1',
-                      applicationLegalese: 'Track your game scores easily.',
+                  AboutListTile(
+                    icon: const Icon(Icons.document_scanner),
+                    applicationName: 'Simply Scored',
+                    applicationIcon: ImageIcon(
+                      AssetImage('assets/images/icon.png'),
                     ),
+                    applicationVersion: '0.1.1',
+                    aboutBoxChildren: [
+                      Text(
+                        'Track your game scores easily. This is app is fully open source. Get the code at https://git.adminforge.de/rmstyle/scoreboard ',
+                      ),
+                      Text(
+                        'For any questions contact me via mail dev@fpuellen.com',
+                      ),
+                    ],
                   ),
                 ],
               ),

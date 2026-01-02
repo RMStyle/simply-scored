@@ -20,6 +20,7 @@ class ScoreSheetsTable extends StatefulWidget {
 }
 
 class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
+  final FocusNode _buttonFocusNode = FocusNode(debugLabel: 'Menu Button');
   late List<String> players;
   late List<List<TextEditingController>> controllers;
   late List<List<FocusNode>> focusNodes;
@@ -186,6 +187,16 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
     }
   }
 
+  void _clearAllInputs() {
+    setState(() {
+      for (final row in controllers) {
+        for (final c in row) {
+          c.clear();
+        }
+      }
+    });
+  }
+
   Future<void> _callUnsavedChangesDialog(bool didPop) async {
     if (!didPop) {
       final shouldLeave = await showDialog<bool>(
@@ -251,15 +262,38 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
         appBar: AppBar(
           title: const Text('Score Sheets'),
           actions: [
-            IconButton(
-              onPressed: _saveToFile,
-              tooltip: 'Save',
-              icon: const Icon(Icons.save),
-            ),
-            IconButton(
-              onPressed: _loadFromFile,
-              tooltip: 'Load',
-              icon: const Icon(Icons.folder_open),
+            MenuAnchor(
+              childFocusNode: _buttonFocusNode,
+              builder: (_, MenuController controller, Widget? child) {
+                return IconButton(
+                  focusNode: _buttonFocusNode,
+                  onPressed: () {
+                    if (controller.isOpen) {
+                      controller.close();
+                    } else {
+                      controller.open();
+                    }
+                  },
+                  icon: const Icon(Icons.more_vert),
+                );
+              },
+              menuChildren: [
+                MenuItemButton(
+                  onPressed: _saveToFile,
+                  leadingIcon: const Icon(Icons.save),
+                  child: Text('Save'),
+                ),
+                MenuItemButton(
+                  onPressed: _loadFromFile,
+                  leadingIcon: const Icon(Icons.folder_open),
+                  child: Text('Load'),
+                ),
+                MenuItemButton(
+                  onPressed: _clearAllInputs,
+                  leadingIcon: const Icon(Icons.delete),
+                  child: Text('Clear All Inputs'),
+                ),
+              ],
             ),
           ],
           automaticallyImplyLeading: !Platform.isAndroid,
