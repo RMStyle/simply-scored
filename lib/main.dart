@@ -1,6 +1,7 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:simply_scored/components/gamecreation.dart';
+import 'package:simply_scored/components/settingspage.dart';
 
 void main() {
   runApp(MaterialApp(home: MainApp()));
@@ -38,6 +39,16 @@ class MainApp extends StatelessWidget {
                 children: <Widget>[
                   const DrawerHeader(
                     child: Text('Settings', style: TextStyle(fontSize: 24)),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.settings),
+                    title: const Text('Settings'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SettingsPage()),
+                      );
+                    },
                   ),
                   AboutListTile(
                     icon: const Icon(Icons.document_scanner),

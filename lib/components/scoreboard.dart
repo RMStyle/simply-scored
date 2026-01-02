@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:simply_scored/models/settings.dart';
 
 class ScoreSheetsTable extends StatefulWidget {
   final List<String> players;
@@ -25,11 +27,17 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
   late List<List<TextEditingController>> controllers;
   late List<List<FocusNode>> focusNodes;
   late int turns;
+  Settings settings = Settings();
   bool showTotals = true;
+  bool _enterHintShown = false;
 
   @override
   void initState() {
     super.initState();
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
     players = widget.players;
     turns = widget.initialTurns;
     controllers = List.generate(
@@ -40,6 +48,9 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
       turns,
       (_) => List.generate(players.length, (_) => FocusNode()),
     );
+
+    final prefs = await SharedPreferences.getInstance();
+    settings.showHints = prefs.getBool('showHints') ?? true;
   }
 
   void _addTurn() {
@@ -375,7 +386,23 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
                                   inputFormatters: [
                                     FilteringTextInputFormatter.digitsOnly,
                                   ],
-                                  onChanged: (_) => setState(() {}),
+                                  onChanged: (_) {
+                                    if (!_enterHintShown &&
+                                        settings.showHints &&
+                                        mounted) {
+                                      _enterHintShown = true;
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Press Enter to jump to next',
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                    setState(() {});
+                                  },
                                   onSubmitted: (_) => _focusNextField(),
                                 ),
                               ),
