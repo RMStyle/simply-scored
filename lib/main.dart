@@ -56,7 +56,7 @@ class MainApp extends StatelessWidget {
                     applicationIcon: ImageIcon(
                       AssetImage('assets/images/icon.png'),
                     ),
-                    applicationVersion: '0.1.2',
+                    applicationVersion: '0.1.3',
                     aboutBoxChildren: [
                       Text(
                         'Track your game scores easily. This is app is fully open source. Get the code at https://git.adminforge.de/rmstyle/scoreboard ',
