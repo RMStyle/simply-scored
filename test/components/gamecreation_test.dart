@@ -18,7 +18,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simply_scored/components/gamecreation.dart';
-import 'package:simply_scored/components/scoreboard.dart';
 
 Future<void> pumpGameCreation(WidgetTester tester) async {
   await tester.pumpWidget(MaterialApp(home: PlayerNameInputList()));

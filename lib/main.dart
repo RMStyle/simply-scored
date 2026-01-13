@@ -46,48 +46,60 @@ class MainApp extends StatelessWidget {
         return MaterialApp(
           theme: ThemeData(colorScheme: lightColorScheme),
           darkTheme: ThemeData(colorScheme: darkColorScheme),
-          home: Scaffold(
-            appBar: AppBar(title: const Text('Player Select')),
-            drawer: Drawer(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: <Widget>[
-                  const DrawerHeader(
-                    child: Text('Settings', style: TextStyle(fontSize: 24)),
+          home: HomePage(),
+        );
+      },
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Simply Scored')),
+      body: Scaffold(
+        appBar: AppBar(title: const Text('Player Select')),
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              const DrawerHeader(
+                child: Text('Settings', style: TextStyle(fontSize: 24)),
+              ),
+              ListTile(
+                leading: const Icon(Icons.settings),
+                title: const Text('Settings'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SettingsPage()),
+                  );
+                },
+              ),
+              AboutListTile(
+                icon: const Icon(Icons.document_scanner),
+                applicationName: 'Simply Scored',
+                applicationIcon: ImageIcon(
+                  AssetImage('assets/images/icon.png'),
+                ),
+                applicationVersion: '0.1.4',
+                aboutBoxChildren: [
+                  Text(
+                    'Track your game scores easily. This is app is fully open source. Get the code at https://git.adminforge.de/rmstyle/scoreboard ',
                   ),
-                  ListTile(
-                    leading: const Icon(Icons.settings),
-                    title: const Text('Settings'),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SettingsPage()),
-                      );
-                    },
-                  ),
-                  AboutListTile(
-                    icon: const Icon(Icons.document_scanner),
-                    applicationName: 'Simply Scored',
-                    applicationIcon: ImageIcon(
-                      AssetImage('assets/images/icon.png'),
-                    ),
-                    applicationVersion: '0.1.4',
-                    aboutBoxChildren: [
-                      Text(
-                        'Track your game scores easily. This is app is fully open source. Get the code at https://git.adminforge.de/rmstyle/scoreboard ',
-                      ),
-                      Text(
-                        'For any questions contact me via mail dev@fpuellen.com',
-                      ),
-                    ],
+                  Text(
+                    'For any questions contact me via mail dev@fpuellen.com',
                   ),
                 ],
               ),
-            ),
-            body: PlayerNameInputList(),
+            ],
           ),
-        );
-      },
+        ),
+        body: PlayerNameInputList(),
+      ),
     );
   }
 }
