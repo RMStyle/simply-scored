@@ -85,10 +85,10 @@ class HomePage extends StatelessWidget {
                 applicationIcon: ImageIcon(
                   AssetImage('assets/images/icon.png'),
                 ),
-                applicationVersion: '0.1.4',
+                applicationVersion: '0.1.5',
                 aboutBoxChildren: [
                   Text(
-                    'Track your game scores easily. This is app is fully open source. Get the code at https://git.adminforge.de/rmstyle/scoreboard ',
+                    'Track your game scores easily. This is app is fully open source and licensed under GPLv3. Get the code at https://git.adminforge.de/rmstyle/scoreboard ',
                   ),
                   Text(
                     'For any questions contact me via mail dev@fpuellen.com',
