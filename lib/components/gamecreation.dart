@@ -102,19 +102,43 @@ class _PlayerNameInputListState extends State<PlayerNameInputList> {
             Expanded(
               child: _players.isEmpty
                   ? const Center(child: Text('No players yet!'))
-                  : ListView.builder(
+                  : ReorderableListView.builder(
+                      buildDefaultDragHandles: false,
                       itemCount: _players.length,
                       itemBuilder: (BuildContext context, int index) {
                         return ListTile(
+                          key: ValueKey(_players[index]),
                           title: Text(
                             _players[index],
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          trailing: FilledButton(
-                            onPressed: () => _removePlayer(_players[index]),
-                            child: const Text('Remove'),
+                          trailing: FittedBox(
+                            fit: BoxFit.fill,
+                            child: Row(
+                              spacing: 16,
+                              children: <Widget>[
+                                OutlinedButton(
+                                  onPressed: () =>
+                                      _removePlayer(_players[index]),
+                                  child: const Icon(Icons.delete),
+                                ),
+                                ReorderableDragStartListener(
+                                  index: index,
+                                  child: const Icon(Icons.drag_handle),
+                                ),
+                              ],
+                            ),
                           ),
                         );
+                      },
+                      onReorder: (int oldIndex, int newIndex) {
+                        setState(() {
+                          if (oldIndex < newIndex) {
+                            newIndex -= 1;
+                          }
+                          final String player = _players.removeAt(oldIndex);
+                          _players.insert(newIndex, player);
+                        });
                       },
                     ),
             ),
