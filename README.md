@@ -10,7 +10,12 @@ Features:
 - Save and load score sheets (JSON)
 - Lightweight, offline-first UI
 
-Created with flutter. Currently the only tested versions are: Linux, Android, Web.
+Created with flutter. Currently the only tested versions are: Linux, Android.
+
+[<img src="https://f-droid.org/badge/get-it-on.png"
+    alt="Get it on F-Droid"
+    height="80">](https://f-droid.org/packages/com.fpuellen.simplyscored)
+
 
 ## AI Assistance Disclaimer
 
