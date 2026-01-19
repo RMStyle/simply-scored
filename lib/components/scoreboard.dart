@@ -18,9 +18,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simply_scored/models/settings.dart';
+import 'package:simply_scored/utils/signed_decimal_input_formatter.dart';
 
 class ScoreSheetsTable extends StatefulWidget {
   final List<String> players;
@@ -108,11 +108,14 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
     super.dispose();
   }
 
-  int getPlayerTotal(int playerIndex) {
-    int total = 0;
+  num getPlayerTotal(int playerIndex) {
+    double total = 0;
     for (int t = 0; t < turns; t++) {
-      int? val = int.tryParse(controllers[t][playerIndex].text);
+      double? val = double.tryParse(controllers[t][playerIndex].text);
       total += val ?? 0;
+    }
+    if (total % 1 == 0) {
+      return total.toInt();
     }
     return total;
   }
@@ -396,10 +399,11 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
                                     hintText: '-',
                                   ),
                                   keyboardType: TextInputType.numberWithOptions(
-                                    decimal: false,
+                                    signed: true,
+                                    decimal: true,
                                   ),
                                   inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly,
+                                    SignedDecimalInputFormatter(),
                                   ],
                                   onChanged: (_) {
                                     if (!_enterHintShown &&
