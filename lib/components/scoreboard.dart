@@ -16,6 +16,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -108,16 +109,13 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
     super.dispose();
   }
 
-  num getPlayerTotal(int playerIndex) {
-    double total = 0;
+  String getPlayerTotal(int playerIndex) {
+    Decimal total = Decimal.zero;
     for (int t = 0; t < turns; t++) {
-      double? val = double.tryParse(controllers[t][playerIndex].text);
-      total += val ?? 0;
+      Decimal? val = Decimal.tryParse(controllers[t][playerIndex].text);
+      total = total + (val ?? Decimal.zero);
     }
-    if (total % 1 == 0) {
-      return total.toInt();
-    }
-    return total;
+    return total.toString();
   }
 
   Map<String, dynamic> _scoreboardToJson() {
@@ -372,7 +370,7 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
                               players.length,
                               (col) => DataCell(
                                 Text(
-                                  getPlayerTotal(col).toString(),
+                                  getPlayerTotal(col),
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                   ),

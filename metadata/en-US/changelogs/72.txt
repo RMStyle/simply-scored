@@ -1,0 +1,1 @@
+Due to user requests: Adds experimental support for negative and decimal scores.

@@ -16,7 +16,7 @@
 import 'package:flutter/services.dart';
 
 class SignedDecimalInputFormatter extends TextInputFormatter {
-  final RegExp _regExp = RegExp(r'^-?\d*[.]?\d*$');
+  final RegExp _regExp = RegExp(r'^(?:-|-?\d+(?:\.\d*)?)?$');
 
   @override
   TextEditingValue formatEditUpdate(
