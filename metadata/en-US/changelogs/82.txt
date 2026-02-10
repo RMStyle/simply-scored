@@ -1,0 +1,3 @@
+Added compact mode
+Fixed settings not being respected
+Values can now take the space they need instead of  a fixed width
