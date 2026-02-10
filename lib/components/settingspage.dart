@@ -38,6 +38,8 @@ class _SettingsPageState extends State<SettingsPage> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _settings.showHints = prefs.getBool('showHints') ?? true;
+      _settings.compactModeActivate =
+          prefs.getBool('compactModeActivate') ?? false;
       _isLoading = false;
     });
   }
@@ -47,6 +49,14 @@ class _SettingsPageState extends State<SettingsPage> {
     setState(() {
       _settings.showHints = value;
       prefs.setBool('showHints', value);
+    });
+  }
+
+  Future<void> _changeCompactModeSetting(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _settings.compactModeActivate = value;
+      prefs.setBool('compactModeActivate', value);
     });
   }
 
@@ -65,6 +75,16 @@ class _SettingsPageState extends State<SettingsPage> {
                     value: _settings.showHints,
                     onChanged: (bool value) {
                       _changeHintSetting(value);
+                    },
+                  ),
+                ),
+                ListTile(
+                  title: Text('Compact Mode'),
+                  subtitle: Text('Toggle compact mode for the scoreboard'),
+                  trailing: Switch(
+                    value: _settings.compactModeActivate,
+                    onChanged: (bool value) {
+                      _changeCompactModeSetting(value);
                     },
                   ),
                 ),

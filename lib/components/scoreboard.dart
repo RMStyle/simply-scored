@@ -66,7 +66,17 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
     );
 
     final prefs = await SharedPreferences.getInstance();
-    settings.showHints = prefs.getBool('showHints') ?? true;
+    setState(() {
+      settings.showHints = prefs.getBool('showHints') ?? true;
+      settings.compactModeActivate =
+          prefs.getBool('compactModeActivate') ?? false;
+    });
+  }
+
+  void _toggleCompactMode() {
+    setState(() {
+      settings.compactModeActivate = !settings.compactModeActivate;
+    });
   }
 
   void _addTurn() {
@@ -320,6 +330,11 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
                   leadingIcon: const Icon(Icons.delete),
                   child: Text('Clear All Inputs'),
                 ),
+                MenuItemButton(
+                  onPressed: _toggleCompactMode,
+                  leadingIcon: const Icon(Icons.compress),
+                  child: Text('Toggle Compact Mode'),
+                ),
               ],
             ),
           ],
@@ -350,6 +365,8 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: DataTable(
+                    columnSpacing: settings.compactModeActivate ? 14.0 : 56.0,
+                    horizontalMargin: settings.compactModeActivate ? 6.0 : 24.0,
                     columns: [
                       const DataColumn(label: Text('Turn')),
                       ...players.map((name) => DataColumn(label: Text(name))),
@@ -387,7 +404,6 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
                             players.length,
                             (col) => DataCell(
                               SizedBox(
-                                width: 60,
                                 child: TextField(
                                   focusNode: focusNodes[rowIndex][col],
                                   controller: controllers[rowIndex][col],

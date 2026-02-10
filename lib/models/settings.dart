@@ -15,6 +15,7 @@
 
 class Settings {
   bool showHints;
+  bool compactModeActivate = false;
 
-  Settings({this.showHints = true});
+  Settings({this.showHints = true, this.compactModeActivate = false});
 }
