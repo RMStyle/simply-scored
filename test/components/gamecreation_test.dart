@@ -96,8 +96,9 @@ void main() {
     await tester.tap(addButton);
     await tester.pumpAndSettle();
 
-    // Find the Remove button next to Carol
-    final removeButton = find.widgetWithText(FilledButton, 'Remove').first;
+    // Find the Remove button next to Carol (OutlinedButton with delete icon)
+    final removeButton = find.widgetWithIcon(OutlinedButton, Icons.delete);
+    expect(removeButton, findsOneWidget);
     await tester.tap(removeButton);
     await tester.pumpAndSettle();
 
