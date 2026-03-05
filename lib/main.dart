@@ -15,6 +15,7 @@
 
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:simply_scored/components/gamecreation.dart';
 import 'package:simply_scored/components/settingspage.dart';
 
@@ -53,8 +54,25 @@ class MainApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  String _version = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadVersion();
+  }
+
+  Future<void> _loadVersion() async {
+    final info = await PackageInfo.fromPlatform();
+    setState(() => _version = info.version);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +103,7 @@ class HomePage extends StatelessWidget {
                 applicationIcon: ImageIcon(
                   AssetImage('assets/images/icon.png'),
                 ),
-                applicationVersion: '0.1.8',
+                applicationVersion: _version,
                 aboutBoxChildren: [
                   Text(
                     'Track your game scores easily. This is app is fully open source and licensed under GPLv3. Get the code at https://git.adminforge.de/rmstyle/scoreboard ',
