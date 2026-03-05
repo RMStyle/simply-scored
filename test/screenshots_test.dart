@@ -13,12 +13,10 @@ void main() {
     setUpAll(() async {
       SharedPreferences.setMockInitialValues({});
     });
-    _screenshot('PlayerSelect', home: MainApp());
+    _screenshot('PlayerSelect', home: HomePage());
     _screenshot(
       'Scoresheet',
-      home: MaterialApp(
-        home: ScoreSheetsTable(players: ['Me', 'You', 'Somebody']),
-      ),
+      home: ScoreSheetsTable(players: ['Me', 'You', 'Somebody']),
     );
   });
 }
@@ -34,7 +32,9 @@ void _screenshot(
     ) async {
       final device = GoldenScreenshotDevices.androidPhone.device;
 
-      await tester.pumpWidget(home);
+      final app = ScreenshotApp(device: device, home: home);
+
+      await tester.pumpWidget(app);
 
       // One of our tests needs to interact with the UI before taking the screenshot.
       await beforeScreenshot?.call(tester);

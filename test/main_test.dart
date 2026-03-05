@@ -45,9 +45,8 @@ void main() {
       await tester.tap(menuButton);
       await tester.pumpAndSettle();
 
-      expect(find.text('Settings'), findsOneWidget);
-      final Finder licensesTile = find.text('Licenses');
-      expect(licensesTile, findsOneWidget);
+      expect(find.widgetWithText(ListTile, 'Settings'), findsOneWidget);
+      expect(find.byType(AboutListTile), findsOneWidget);
 
       // TODO: Fix
 
