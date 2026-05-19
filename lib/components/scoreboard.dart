@@ -382,86 +382,93 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
               Expanded(
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  child: DataTable(
-                    columnSpacing: settings.compactModeActivate ? 14.0 : 56.0,
-                    horizontalMargin: settings.compactModeActivate ? 6.0 : 24.0,
-                    columns: [
-                      const DataColumn(label: Text('Turn')),
-                      ...players.map((name) => DataColumn(label: Text(name))),
-                    ],
-                    rows: List.generate(turns + (showTotals ? 1 : 0), (
-                      rowIndex,
-                    ) {
-                      if (showTotals && rowIndex == turns) {
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: DataTable(
+                      columnSpacing: settings.compactModeActivate ? 14.0 : 56.0,
+                      horizontalMargin: settings.compactModeActivate
+                          ? 6.0
+                          : 24.0,
+                      columns: [
+                        const DataColumn(label: Text('Turn')),
+                        ...players.map((name) => DataColumn(label: Text(name))),
+                      ],
+                      rows: List.generate(turns + (showTotals ? 1 : 0), (
+                        rowIndex,
+                      ) {
+                        if (showTotals && rowIndex == turns) {
+                          return DataRow(
+                            cells: [
+                              const DataCell(
+                                Text(
+                                  'Total',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              ...List.generate(
+                                players.length,
+                                (col) => DataCell(
+                                  Text(
+                                    getPlayerTotal(col),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        }
                         return DataRow(
                           cells: [
-                            const DataCell(
-                              Text(
-                                'Total',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
+                            DataCell(Text('Turn ${rowIndex + 1}')),
                             ...List.generate(
                               players.length,
                               (col) => DataCell(
-                                Text(
-                                  getPlayerTotal(col),
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
+                                SizedBox(
+                                  child: TextField(
+                                    focusNode: focusNodes[rowIndex][col],
+                                    controller: controllers[rowIndex][col],
+                                    decoration: const InputDecoration(
+                                      border: InputBorder.none,
+                                      isDense: true,
+                                      hintText: '-',
+                                    ),
+                                    keyboardType:
+                                        TextInputType.numberWithOptions(
+                                          signed: true,
+                                          decimal: true,
+                                        ),
+                                    textInputAction: TextInputAction.next,
+                                    inputFormatters: [
+                                      SignedDecimalInputFormatter(),
+                                    ],
+                                    onChanged: (_) {
+                                      if (!_enterHintShown &&
+                                          settings.showHints &&
+                                          mounted) {
+                                        _enterHintShown = true;
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'Press Enter to jump to next',
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                      setState(() {});
+                                    },
+                                    onSubmitted: (_) => _focusNextField(),
                                   ),
                                 ),
                               ),
                             ),
                           ],
                         );
-                      }
-                      return DataRow(
-                        cells: [
-                          DataCell(Text('Turn ${rowIndex + 1}')),
-                          ...List.generate(
-                            players.length,
-                            (col) => DataCell(
-                              SizedBox(
-                                child: TextField(
-                                  focusNode: focusNodes[rowIndex][col],
-                                  controller: controllers[rowIndex][col],
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    isDense: true,
-                                    hintText: '-',
-                                  ),
-                                  keyboardType: TextInputType.numberWithOptions(
-                                    signed: true,
-                                    decimal: true,
-                                  ),
-                                  inputFormatters: [
-                                    SignedDecimalInputFormatter(),
-                                  ],
-                                  onChanged: (_) {
-                                    if (!_enterHintShown &&
-                                        settings.showHints &&
-                                        mounted) {
-                                      _enterHintShown = true;
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'Press Enter to jump to next',
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                    setState(() {});
-                                  },
-                                  onSubmitted: (_) => _focusNextField(),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    }),
+                      }),
+                    ),
                   ),
                 ),
               ),

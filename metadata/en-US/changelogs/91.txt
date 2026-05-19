@@ -1,0 +1,5 @@
+Hotfix: Scrolling on longer game sessions
+
+Technical:
+Generate screenshots automatically
+Update version in dialog automatically
