@@ -288,6 +288,24 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
     }
   }
 
+  void _focusFirstEmptyField() {
+    for (int row = 0; row < turns; row++) {
+      for (int column = 0; column < players.length; column++) {
+        if (controllers[row][column].text.trim().isEmpty) {
+          focusNodes[row][column].requestFocus();
+          return;
+        }
+      }
+    }
+
+    _addTurn();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (focusNodes.isNotEmpty && focusNodes.last.isNotEmpty) {
+        focusNodes.last.first.requestFocus();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -450,7 +468,11 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
             ],
           ),
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _focusFirstEmptyField,
+          child: const Icon(Icons.edit),
       ),
+      )
     );
   }
 }
