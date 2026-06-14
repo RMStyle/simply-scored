@@ -140,7 +140,7 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
 
   Future<void> _saveToFile() async {
     // Let the user pick where to save the file.
-    final selected = await FilePicker.platform.saveFile(
+    final selected = await FilePicker.saveFile(
       dialogTitle: 'Save scoreboard',
       fileName: 'scoreboard.json',
       bytes: utf8.encode(jsonEncode(_scoreboardToJson())),
@@ -156,7 +156,7 @@ class _ScoreSheetsTableState extends State<ScoreSheetsTable> {
 
   Future<void> _loadFromFile() async {
     try {
-      final result = await FilePicker.platform.pickFiles(
+      final result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['json'],
       );
