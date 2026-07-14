@@ -1,0 +1,3 @@
+Technical:
+
+Upped deps and fixed gradle build
