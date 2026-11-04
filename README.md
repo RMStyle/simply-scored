@@ -1,3 +1,5 @@
+This project is now archived. I currently do not possess an android phone and thus do not use it daily anymore. Feel free to fork it. 
+
 # Simply Scored
 
 Track your game scores easily.
